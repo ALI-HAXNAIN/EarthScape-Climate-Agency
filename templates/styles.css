@@ -1,0 +1,155 @@
+/* Theme Colors */
+:root {
+    --green: #2E7D32;
+    --blue: #0288D1;
+    --brown: #8D6E63;
+    --beige: #F5E9D2;
+}
+
+/* Navbar Styles */
+.bg-beige {
+    background-color: var(--beige) !important;
+}
+
+.text-green {
+    color: var(--green) !important;
+}
+
+.btn-green {
+    background-color: var(--green);
+    color: #fff;
+    border-radius: 5px;
+}
+
+.btn-green:hover {
+    background-color: #256628;
+    color: #fff;
+}
+
+.btn-outline-green {
+    border: 2px solid var(--green);
+    color: var(--green);
+    border-radius: 5px;
+}
+
+.btn-outline-green:hover {
+    background-color: var(--green);
+    color: #fff;
+}
+
+/* Carousel Styles */
+.carousel-img {
+    height: 520px;
+    object-fit: cover;
+}
+
+.carousel-caption h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.carousel-caption p {
+    font-size: 1.1rem;
+}
+
+/* About Section */
+section p {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Footer */
+.bg-green {
+    background-color: var(--green) !important;
+}
+/* User Dashboard */
+/* Sidebar Design */
+#sidebar-wrapper {
+    min-height: 50vh;
+    width: 180px;
+    background-color: #121412;
+    flex-shrink: 0;
+}
+
+.sidebar-brand-container {
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* THE FIX: Constraints for the logo image */
+.sidebar-logo {
+    max-width: 120px; /* Adjust this to make logo bigger/smaller */
+    height: auto;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.brand-text-wrapper h4 {
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+/* Nav Links Styling */
+.nav-link-custom {
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 14px 25px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.nav-link-custom:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-link-custom.active {
+    color: #fff !important;
+    background: #2E7D32;
+    border-right: 4px solid #fff;
+}
+
+/* Stat Cards Fix */
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-left: 6px solid #2E7D32;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+}
+
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+.text-green { color: #2E7D32 !important; }
+.bg-green { background-color: #2E7D32 !important; }
+
+/* 1. The main scrollbar container */
+::-webkit-scrollbar {
+    width: 10px;               /* Thin enough to look modern */
+}
+
+/* 2. The background (track) */
+::-webkit-scrollbar-track {
+    background: #e8f5e9;       /* A very light green to match EarthScape */
+    border-radius: 10px;
+}
+
+/* 3. The draggable part (thumb) */
+::-webkit-scrollbar-thumb {
+    background: #2E7D32;       /* Your brand's green */
+    border-radius: 10px;       /* Makes it look pill-shaped */
+    border: 2px solid #e8f5e9; /* Adds a "gap" between thumb and track */
+}
+
+/* 4. Color change when hovering */
+::-webkit-scrollbar-thumb:hover {
+    background: #1B5E20;       /* Darker green when user interacts */
+}

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarthScape Climate Agency</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        /* Theme Colors */
+        :root {
+            --green: #2E7D32;
+            --blue: #0288D1;
+            --brown: #8D6E63;
+            --beige: #F5E9D2;
+        }
+
+        /* --- NAVBAR OVERLAY STYLES --- */
+        .overlay-navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1050;
+            width: 100%;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Style for buttons/text on the dark video background */
+        .overlay-navbar .navbar-nav .btn-outline-green {
+            border: 2px solid #fff;
+            color: #fff;
+        }
+
+        .overlay-navbar .navbar-nav .btn-outline-green:hover {
+            background-color: var(--green);
+            border-color: var(--green);
+            color: #fff;
+        }
+
+        .navbar {
+            height: 100px;
+        }
+
+        .navbar-brand img {
+            max-width: 250px;
+            height: auto;
+        }
+
+        /* --- END NAVBAR OVERLAY STYLES --- */
+
+
+        .text-green {
+            color: var(--green) !important;
+        }
+
+        .btn-green {
+            background-color: var(--green);
+            color: #fff;
+        }
+
+        .btn-green:hover {
+            background-color: #256628;
+            color: #fff;
+        }
+
+        .btn-outline-green {
+            border: 2px solid var(--green);
+            color: var(--green);
+        }
+
+        .btn-outline-green:hover {
+            background-color: var(--green);
+            color: #fff;
+        }
+
+        /* --- CAROUSEL HEIGHT CONTROL --- */
+        /* --- FULL SCREEN CAROUSEL CONTROL --- */
+        #mainCarousel {
+            /* Remove the negative margin if you want it to sit perfectly under the navbar */
+            margin-top: 0;
+            width: 100%;
+        }
+
+        .carousel-item {
+            /* 100vh means exactly 100% of the screen height */
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-video {
+            width: 100%;
+            height: 100%;
+            /* This ensures the video covers the area without stretching */
+            object-fit: cover;
+            filter: brightness(50%);
+        }
+
+        .carousel-caption {
+            z-index: 2;
+            /* This centers the text vertically and horizontally in the 100vh space */
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+
+        .carousel-caption h2 {
+            font-size: 3.5rem;
+            /* Slightly larger for big screens */
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- END CAROUSEL HEIGHT CONTROL --- */
+
+        /* Sections */
+        section p {
+            line-height: 1.6;
+        }
+
+        /* --- MISSION SECTION (UPDATED FOR IMAGE BACKGROUNDS AND HEIGHT) --- */
+        .mission-section {
+            background-color: #fff;
+        }
+
+        .mission-box {
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ebedec;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(37, 215, 43, 0.08);
+            transition: transform 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 2. Add a dark overlay layer for better text readability */
+        .mission-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+            border-radius: 10px;
+        }
+
+        /* Ensure content and hover effect stay on top of the overlay */
+        .mission-box>*,
+        .mission-box:hover {
+            z-index: 2;
+            position: relative;
+            color: #fff !important;
+        }
+
+        /* Re-style text/icons for the dark background */
+        .mission-box h5,
+        .mission-box p,
+        .mission-box .mission-icon {
+            color: #fff !important;
+        }
+
+        .mission-box:hover {
+            transform: translateY(-6px);
+        }
+
+        /* Custom Background Images for Each Card (Adjust paths as necessary) */
+        .box-monitor {
+            background-image: url('static/images/c1.png');
+        }
+
+        .box-data {
+            background-image: url('static/images/c2.png');
+        }
+
+        .box-sustain {
+            background-image: url('static/images/c3.png');
+        }
+
+        /* --- END MISSION SECTION UPDATES --- */
+
+        /* --- NEW PARTNERS & CLIENTS SECTION --- */
+        .partners-section {
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Style for individual client logos (adjust max-width as needed) */
+        .client-logo img {
+            max-width: 150px;
+            height: auto;
+            opacity: 0.6;
+            filter: grayscale(100%);
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .client-logo img:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        /* --- NEW CALL TO ACTION SECTION --- */
+        .cta-box {
+            background-color: var(--green);
+            color: #fff;
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-box h3 {
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5221 100%);
+            padding: 30px 0 15px;
+            /* Shorter vertical height */
+            color: white;
+        }
+
+        
+
+        .footer-logo {
+            /* Increased size as requested */
+            width: 300px;
+            height: auto;
+            /* Removes any default top padding */
+            display: block;
+            margin: -80px -50px;
+        }
+
+        .footer-row-align {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer h5 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-contact li {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .footer-social {
+            margin-bottom: 20px;
+        }
+
+        .footer-social a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: 0.3s;
+            opacity: 0.8;
+        }
+
+        .footer-social a:hover {
+            opacity: 1;
+            transform: translateY(-3px);
+            color: #81c784;
+        }
+
+        .footer-divider {
+            margin: 20px 0 10px;
+            /* Reduced margins around the line */
+            opacity: 0.1;
+        }
+
+        .input-group-sm .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .input-group-sm .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #e8f5e9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #2E7D32; border-radius: 10px; border: 2px solid #e8f5e9; }
+        ::-webkit-scrollbar-thumb:hover { background: #1B5E20; }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light overlay-navbar">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#">
+                <img src="{{ url_for('static', filename='images/whitetextedlogo.png') }}" alt="EarthScape Logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav gap-2">
+                    <li class="nav-item">
+                        <a href="/login" class="btn btn-outline-green">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/signup" class="btn btn-green">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mainCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+
+            <div class="carousel-item active">
+                <video class="d-block w-100 carousel-video" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='images/v1.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption">
+                    <h2>Real-Time Earth Observation</h2>
+                    <p>Tracking global environmental shifts with satellite data.</p>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <video class="d-block w-100 carousel-video" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='images/v2.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption">
+                    <h2>Environmental Archives</h2>
+                    <p>Compare current data with historical patterns to see changes.</p>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <video class="d-block w-100 carousel-video" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='images/v5.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption">
+                    <h2>Predict Weather</h2>
+                    <p>Use our weather prediction tools.</p>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <video class="d-block w-100 carousel-video" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='images/v3.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption">
+                    <h2>Emissions & Air Quality</h2>
+                    <p>Analyzing pollution patterns for a cleaner future.</p>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <video class="d-block w-100 carousel-video" autoplay loop muted playsinline>
+                    <source src="{{ url_for('static', filename='images/v4.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption">
+                    <h2>Real-Time Analytics</h2>
+                    <p>Interactive data visualization of global environmental metrics.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <section class="py-5 bg-light pt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="{{ url_for('static', filename='images/p5.jpg') }}" class="img-fluid rounded shadow"
+                        alt="">
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <h2 class="text-green fw-bold">About EarthScape</h2>
+                    <p>
+                        EarthScape is dedicated to climate monitoring, environmental awareness, and data-driven
+                        sustainability solutions.
+                        We transform complex Earth data into meaningful insights that empower communities, researchers,
+                        and policymakers.
+                        Our mission is to bridge the gap between science and society by making environmental information
+                        accessible, clear, and actionable.
+                        Through satellite imagery, ground sensors, and advanced analytics, we provide a holistic view of
+                        our planet’s health.
+                        We believe that knowledge inspires change, and change drives a sustainable future for
+                        generations to come.
+                    </p>
+                    <a href="/signup" class="btn btn-green">Sign Up For More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mission-section py-5">
+        <div class="container text-center">
+            <h2 class="fw-bold text-green mb-3">Our Mission</h2>
+            <p class="mb-5">
+                Empower communities through climate intelligence and sustainable innovation.
+            </p>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="mission-box box-monitor">
+                        <h5 class="fw-bold">Climate Monitoring</h5>
+                        <p>Tracking environmental changes using modern data systems.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mission-box box-data">
+                        <h5 class="fw-bold">Data Visualization</h5>
+                        <p>Turning raw climate data into clear visual insights.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mission-box box-sustain">
+                        <h5 class="fw-bold">Sustainability</h5>
+                        <p>Promoting eco-friendly actions for future generations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="partners-section py-5">
+        <div class="container text-center">
+            <h2 class="fw-bold text-green mb-5">Our Trusted Partners</h2>
+            <div class="row align-items-center justify-content-center g-4">
+
+                <div class="col-6 col-md-2 client-logo">
+                    <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Eco Foundation Logo"
+                        class="img-fluid">
+                </div>
+                <div class="col-6 col-md-2 client-logo">
+                    <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Data Institute Logo"
+                        class="img-fluid">
+                </div>
+                <div class="col-6 col-md-2 client-logo">
+                    <img src="{{ url_for('static', filename='images/logo3.png') }}" alt="University Research Logo"
+                        class="img-fluid">
+                </div>
+                <div class="col-6 col-md-2 client-logo">
+                    <img src="{{ url_for('static', filename='images/logo4.png') }}" alt="Global NGO Logo"
+                        class="img-fluid">
+                </div>
+                <div class="col-6 col-md-2 client-logo">
+                    <img src="{{ url_for('static', filename='images/logo5.png') }}" alt="Tech Solutions Logo"
+                        class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="cta-box">
+                <h3 class="text-white">Ready to make an impact?</h3>
+                <p class="lead mb-4 text-white">
+                    Whether you are an individual, researcher, or organization, find your path to engage with EarthScape
+                    and drive global sustainability.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="/signup" class="btn btn-lg btn-light fw-bold text-green">Sign Up for Access</a>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4 align-items-center " > 
+
+                <div class="col-lg-4 col-md-4 text-center text-lg-start ">
+                    <img src="{{ url_for('static', filename='images/whitetextedlogo.png') }}" alt="EarthScape Logo"
+                        class="footer-logo">
+                </div>
+
+                <!-- <div class="col-lg-3 col-md-3 text-center text-lg-center">
+                    <h5 class="fw-bold">Links</h5>
+                    <ul class="list-unstyled footer-contact mb-0">
+                        <li><a href="{{ url_for('auth.login') }}"
+                                class="text-white text-decoration-none opacity-75">Login</a></li>
+                        <li><a href="{{ url_for('auth.signup') }}"
+                                class="text-white text-decoration-none opacity-75">SignUp</a></li>
+                        </li>
+                    </ul>
+                </div> -->
+
+                <div class="col-lg-4 col-md-4 text-center text-lg-center">
+                    <h3 class="fw-bold">Contact</h3>
+                    <ul class="list-unstyled footer-contact mb-0">
+                        <li"><i class="bi bi-geo-alt-fill me-2"></i> Green Avenue, Eco City</li>
+                        <li><i class="bi bi-envelope-fill me-2"></i> info@earthscape.org</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-4 text-center text-lg-end">
+                    <h3>Agency Status</h3>
+                    <ul class="p-0 m-0 footer-contact text-end" style="list-style: none;">
+                        <li ><span class="badge bg-success me-2">Live</span> Monitoring Active</li>
+                        <li><i class="bi bi-clock me-2"></i>Mon - Fri: 9AM - 6PM</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="footer-divider" style="margin: 25px 0 10px; opacity: 0.1;">
+
+            <div class="text-center">
+                <div class="footer-social">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                </div>
+                <p class="small opacity-50 mb-0">© 2025 EarthScape Climate Agency. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EarthScape Climate Agency</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --earth-green: #2E7D32;
+            --forest-dark: #1B5E20;
+            --soft-bg: #f4f7f6;
+            --sidebar-dark: #121412;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            background-color: var(--soft-bg);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-dark);
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #page-content-wrapper {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+        }
+
+        .stat-card {
+            border: none;
+            transition: transform 0.2s;
+            border-left: 5px solid;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+        .text-green { color: var(--earth-green); }
+        .bg-green { background-color: var(--earth-green) !important; }
+
+        /* Animation for Active Alerts */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .alert-pulse {
+            animation: pulse-red 2s infinite;
+            border-left: 5px solid #dc3545 !important;
+        }
+
+        .nav-link-custom {
+            color: rgba(255, 255, 255, 0.6);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .nav-link-custom i {
+            font-size: 1.2rem;
+            width: 30px;
+        }
+
+        .nav-link-custom:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .nav-link-custom.active {
+            background: rgba(46, 125, 50, 0.15);
+            color: white;
+            border-left: 4px solid var(--earth-green);
+        }
+
+        .logout-link {
+            margin-top: auto;
+            margin-bottom: 20px;
+            color: #ff4d4d !important;
+        }
+
+        .sidebar-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .sidebar-brand {
+            height: 180px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #e8f5e9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #2E7D32; border-radius: 10px; border: 2px solid #e8f5e9; }
+        ::-webkit-scrollbar-thumb:hover { background: #1B5E20; }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper" class="shadow">
+            <div class="sidebar-brand">
+                <img class="sidebar-logo" src="{{ url_for('static', filename='images/whitelogo.png') }}" alt="Logo">
+                <h4 class="text-white fw-bold mb-0" style="letter-spacing: 1px;">EarthScape</h4>
+                <small class="text-white-50 text-uppercase" style="font-size: 0.65rem; letter-spacing: 2px;">Climate Agency</small>
+            </div>
+            <nav class="mt-3 flex-grow-1">
+                <a href="{{ url_for('main.userdashboard') }}" class="nav-link-custom {% if request.endpoint == 'main.userdashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('main.visualization') }}" class="nav-link-custom {% if request.endpoint == 'main.visualization' %}active{% endif %}">
+                    <i class="bi bi-graph-up-arrow"></i> <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('main.predict') }}" class="nav-link-custom {% if request.endpoint == 'main.predict' %}active{% endif %}">
+                    <i class="bi bi-cpu-fill"></i> <span>Predictions</span>
+                </a>
+                <a href="{{ url_for('notifications.view_notifications') }}" class="nav-link-custom {% if request.endpoint == 'notifications.view_notifications' %}active{% endif %}">
+                    <i class="bi bi-bell-fill"></i> <span>Notifications</span>
+                </a>
+                <a href="{{ url_for('feedback.submit_feedback') }}" class="nav-link-custom {% if request.endpoint == 'feedback.submit_feedback' %}active{% endif %}">
+                    <i class="bi bi-chat-dots-fill"></i> <span>Feedback</span>
+                </a>
+            </nav>
+            <div class="border-top border-secondary mx-4 opacity-10"></div>
+            <a href="{{ url_for('auth.logout') }}" class="nav-link-custom logout-link">
+                <i class="bi bi-power"></i> <span>Logout</span>
+            </a>
+        </div>
+
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-4 shadow-sm">
+                <div class="container-fluid">
+                    <h5 class="m-0 fw-bold">Monitoring Overview</h5>
+                    <div class="ms-auto d-flex align-items-center" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#profileModal">
+                        <div class="text-end me-3 d-none d-md-block">
+                            <p class="small mb-0 text-muted">User Profile</p>
+                            <h6 class="mb-0 fw-bold text-green">{{ session['username'] }}</h6>
+                        </div>
+                        {% if session.get('profile_pic_url') %}
+                            <img src="{{ session['profile_pic_url'] }}" class="rounded-circle border" style="width: 40px; height: 40px; object-fit: cover;">
+                        {% else %}
+                            <i class="bi bi-person-circle fs-3 text-green"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; background: linear-gradient(135deg, #ffffff 0%, #f9fff9 100%); border-left: 5px solid #2E7D32;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-uppercase fw-bold text-muted mb-1" style="font-size: 0.75rem;">Default Monitoring Station</h6>
+                                    {% if session.get('home_city') %}
+                                        <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt-fill text-danger me-2"></i>{{ session.get('home_city') }}, {{ session.get('home_country') }}</h5>
+                                    {% else %}
+                                        <h5 class="mb-0 fw-bold text-muted italic">No Location Set</h5>
+                                    {% endif %}
+                                </div>
+                                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#locationModal">
+                                    <i class="bi bi-pencil-square me-1"></i> Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if alert_messages %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center" role="alert" style="border-radius: 12px;">
+                            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Climate Anomalies Detected:</h6>
+                                <ul class="mb-0 small">
+                                    {% for msg in alert_messages %}
+                                        <li>{{ msg }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row g-3 mb-4 text-center">
+                    <div class="col-md-3">
+                        <div class="stat-card p-3 shadow-sm rounded bg-white" style="border-left-color: #bf454c;">
+                            <small class="text-muted">Local Temp</small>
+                            <h4 class="fw-bold mb-0 text-danger"><span class="counter" data-target="{{ local_temp }}">0</span>°C</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card p-3 shadow-sm rounded bg-white" style="border-left-color: #0d6efd;">
+                            <small class="text-muted">Local Humidity</small>
+                            <h4 class="fw-bold mb-0 text-primary"><span class="counter" data-target="{{ local_humidity }}">0</span>%</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card p-3 shadow-sm rounded bg-white" style="border-left-color: #6610f2;">
+                            <small class="text-muted">CO2 Levels</small>
+                            <h4 class="fw-bold mb-0" style="color: #6610f2;"><span class="counter" data-target="{{ co2_level }}">0</span> ppm</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card p-3 shadow-sm rounded bg-white {% if active_alerts > 0 %}alert-pulse{% endif %}" style="border-left-color: #ffc107;">
+                            <small class="text-muted">Regional Alerts</small>
+                            <h4 class="fw-bold mb-0 {% if active_alerts > 0 %}text-danger{% else %}text-warning{% endif %}">
+                                <span class="counter" data-target="{{ active_alerts }}">0</span> Active
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                            <h5 class="fw-bold mb-4">Weekly Climate Variance</h5>
+                            <div style="height: 300px;"><canvas id="tempChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm p-4 mb-4 bg-green text-white">
+                            <h5>Intelligence Tool</h5>
+                            <p class="small opacity-75">Run AI model for regional predictions.</p>
+                            <a href="{{ url_for('main.predict') }}" class="btn btn-light text-green w-100 fw-bold py-2">Open Predictor</a>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4">
+                            <h6 class="fw-bold mb-3">Local Station Status</h6>
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="bg-light p-2 rounded me-3 text-primary"><i class="bi bi-broadcast"></i></div>
+                                <p class="small mb-0">
+                                    {% if session.get('home_city') %}
+                                        <strong>{{ session.get('home_city') }}:</strong> Live Sync Active
+                                    {% else %}
+                                        <strong>No Station:</strong> Waiting for Location
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light p-2 rounded me-3 text-success"><i class="bi bi-shield-check"></i></div>
+                                <p class="small mb-0">Security Protocols Verified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="locationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form action="{{ url_for('main.save_location') }}" method="POST" autocomplete="off">
+                <div class="modal-header bg-green text-white">
+                    <h5 class="modal-title fw-bold">Update Monitoring Station</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <button type="button" id="locateBtn" class="btn btn-outline-secondary w-100 py-2 fw-bold">
+                            <i class="bi bi-geo-fill me-2"></i> Use My Current Location
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">City Name</label>
+                        <input type="text" name="city" id="modal_city" class="form-control rounded-3" placeholder="e.g. London" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Country</label>
+                        <input type="text" name="country" id="modal_country" class="form-control rounded-3" placeholder="e.g. UK" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form action="{{ url_for('auth.update_profile_pic') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-gear me-2"></i>Account Settings</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        {% if session.get('profile_pic_url') %}
+                            <img src="{{ session['profile_pic_url'] }}" class="rounded-circle border mb-2" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <i class="bi bi-person-circle display-4 text-green"></i>
+                        {% endif %}
+                        <h5 class="mt-2 fw-bold">{{ session['username'] }}</h5>
+                        <span class="badge bg-light text-dark border">Member</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Update Profile Picture</label>
+                        <input type="file" name="profile_pic" class="form-control rounded-3" accept="image/*">
+                        <small class="text-muted">Upload an image to personalize your dashboard.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text" class="form-control bg-light" value="{{ session['username'] }}" readonly disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" value="{{ session.get('email', '') }}" placeholder="Enter your email">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success px-4 fw-bold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Counter Animation Logic
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = parseFloat(counter.getAttribute('data-target')) || 0;
+            let count = 0;
+            const speed = 2000; 
+            
+            const updateCount = () => {
+                const increment = target / (speed / 16); 
+                if (count < target) {
+                    count += increment;
+                    counter.innerText = target % 1 === 0 ? Math.ceil(count) : count.toFixed(1);
+                    requestAnimationFrame(updateCount);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+
+        // 2. Chart.js Initialization
+        const canvas = document.getElementById('tempChart');
+        if (canvas) {
+            const labels = {{ chart_labels | tojson | safe }};
+            const tempData = {{ temp_history | tojson | safe }};
+            const humData = {{ hum_history | tojson | safe }};
+            const co2Data = {{ co2_history | tojson | safe }};
+
+            if (labels.length > 0) {
+                new Chart(canvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Temp (°C)',
+                                data: tempData,
+                                borderColor: '#dc3545',
+                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Humidity (%)',
+                                data: humData,
+                                borderColor: '#0d6efd',
+                                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'CO2 (ppm)',
+                                data: co2Data,
+                                borderColor: '#6610f2',
+                                borderDash: [5, 5], // Make it a dashed line
+                                fill: false,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: { y: { beginAtZero: false } }
+                    }
+                });
+            }
+        }
+    });
+
+document.getElementById('locateBtn').addEventListener('click', function() {
+    const btn = this;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Pinpointing City...';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error, {enableHighAccuracy: true});
+    } else {
+        alert("Geolocation not supported.");
+        btn.innerHTML = '<i class="bi bi-geo-fill me-2"></i> Use My Current Location';
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // BigDataCloud is much better for "City-level" accuracy
+        fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
+            .then(response => response.json())
+            .then(data => {
+                // Extracts the main City name, ignoring small districts/villages
+                const cleanCity = data.city || data.locality || data.principalSubdivision;
+                const cleanCountry = data.countryName;
+
+                if (cleanCity) document.getElementById('modal_city').value = cleanCity;
+                if (cleanCountry) document.getElementById('modal_country').value = cleanCountry;
+                
+                btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Location Synced';
+                btn.classList.replace('btn-outline-secondary', 'btn-success');
+            })
+            .catch(err => {
+                alert("Error fetching city name. Please type it manually.");
+                btn.innerHTML = '<i class="bi bi-geo-fill me-2"></i> Use My Current Location';
+            });
+    }
+
+    function error() {
+        alert("Location access denied. Please enable location in your browser settings.");
+        btn.innerHTML = '<i class="bi bi-geo-fill me-2"></i> Use My Current Location';
+    }
+});
+
+    (function () {
+        window.onpageshow = function (event) {
+            if (event.persisted) {
+                window.location.reload(); // Force a refresh to check session status
+            }
+        };
+    })();
+
+    </script>
+</body>
+</html>
