@@ -1,10 +1,5 @@
-from flask import Flask
-# Import your actual logic from the app folder
-# If your main logic is in app/main.py, use:
-from app.main import app as application
+from app.main import app
 
-# This tells Vercel to use 'app'
-app = application 
-
+# Vercel looks for 'app' at the root level
 if __name__ == "__main__":
     app.run()
