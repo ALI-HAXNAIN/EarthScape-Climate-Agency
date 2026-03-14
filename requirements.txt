@@ -2,3 +2,6 @@ Flask
 flask-pymongo
 pandas
 numpy
+matplotlib
+requests
+gunicorn
